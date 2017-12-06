@@ -17,6 +17,11 @@
    {:numbers [0 0 0]
     :message "Edit me"}))
 
+(.addEventListener
+ js/window "mousemove"
+ (fn [e]
+   (swap! app-state assoc :mouse [(.-clientX e) (.-clientY e)])))
+
 ;; rx/rx is a formula, which is recalculated every time when other formulas and cells
 ;; dereferenced inside it
 (def numbers-sum-first-variant (rx/rx (reduce + (get @app-state :numbers))))
@@ -54,12 +59,18 @@
       "Number " i " = " (get @numbers i)])
    [:div "Sum = " @numbers-sum]])
 
+(defn mouse-coords []
+  (let [[x y] (get @app-state :mouse)]
+    [:h3 "Mouse Coords: (" x "," y ")"]))
+
 (defn app []
   [:div
    [:h3 "Hello, world!"]
    [counters]
    [:hr]
-   [message-editor]])
+   [message-editor]
+   [:hr]
+   [mouse-coords]])
 
 ;; to actually show page we need to mount it to specific element
 (vdom/mount [app] (js/document.getElementById "app"))
